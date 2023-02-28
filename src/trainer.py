@@ -40,21 +40,30 @@ class CTCTrainer(Trainer):
         model.train()
         inputs = self._prepare_inputs(inputs)
 
+        """ #from original code
         if self.use_amp:
             with autocast():
                 loss = self.compute_loss(model, inputs)
         else:
             loss = self.compute_loss(model, inputs)
+        """
+        loss = self.compute_loss(model, inputs)
 
         if self.args.gradient_accumulation_steps > 1:
             loss = loss / self.args.gradient_accumulation_steps
 
+        """ #from original code
         if self.use_amp:
             self.scaler.scale(loss).backward()
         elif self.use_apex:
             with amp.scale_loss(loss, self.optimizer) as scaled_loss:
                 scaled_loss.backward()
         elif self.deepspeed:
+            self.deepspeed.backward(loss)
+        else:
+            loss.backward()
+        """
+        if self.deepspeed:
             self.deepspeed.backward(loss)
         else:
             loss.backward()

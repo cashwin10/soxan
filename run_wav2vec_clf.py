@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import logging
 import os
 import sys
@@ -27,7 +28,8 @@ from src.collator import DataCollatorCTCWithPadding
 from src.trainer import CTCTrainer
 
 logger = logging.getLogger(__name__)
-MODEL_MODES = ["wav2vec", "hubert"]
+#MODEL_MODES = ["wav2vec", "hubert"] #from original code
+MODEL_MODES = ["wav2vec2", "hubert"]
 POOLING_MODES = ["mean", "sum", "max"]
 DELIMITERS = {"tab": "\t", "comma": ",", "pipe": "|"}
 
@@ -42,7 +44,8 @@ class ModelArguments:
         metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
     )
     model_mode: str = field(
-        default="wav2vec",
+        #default="wav2vec", #from original code
+        default="wav2vec2",
         metadata={
             "help": "Specifies the base model and must be from the following: " + ", ".join(MODEL_MODES)
         },
@@ -293,9 +296,11 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
-    target_sampling_rate = feature_extractor.feature_extractor.sampling_rate
+    #target_sampling_rate = feature_extractor.feature_extractor.sampling_rate #from the original code
+    target_sampling_rate = feature_extractor.sampling_rate
 
-    if model_args.model_mode == "wav2vec":
+    #if model_args.model_mode == "wav2vec": #from original code
+    if model_args.model_mode == "wav2vec2":
         model = Wav2Vec2ForSpeechClassification.from_pretrained(
             model_args.model_name_or_path,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
