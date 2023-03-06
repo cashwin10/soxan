@@ -1,11 +1,14 @@
 # Soxan
 
-> در زبان پارسی به نام سخن
-
 
 This repository consists of models, scripts, and notebooks that help you to use all the benefits of Wav2Vec 2.0 in your
 research. In the following, I'll show you how to train speech tasks in your dataset and how to use the pretrained
 models.
+
+I have modified the source code with the following changes to get this to work on my Mac Pro local env
+Diff from source code:
+(1) Extra files - data_prep.py and inference.py, (2) a modification to the bash script for training,
+(3) python3 shebang included in run_wav2vec.py 
 
 ## How to train
 
@@ -44,12 +47,12 @@ python3 run_wav2vec_clf.py \
     --save_total_limit=2 \
     --do_eval \
     --do_train \
-    --fp16 \
+    --fp16=False \ #had set to false since the library dependency issue could not be resolved
     --freeze_feature_extractor
 ```
 
 ### Prediction
-
+#use the inference.py file in src if this doesn't work
 ```python
 import torch
 import torch.nn as nn
@@ -129,3 +132,71 @@ Output:
 | [Speech Emotion Recognition (Greek) (AESDD)](http://m3c.web.auth.gr/research/aesdd-speech-emotion-recognition/)              | [m3hrdadfi/wav2vec2-xlsr-greek-speech-emotion-recognition](https://huggingface.co/m3hrdadfi/wav2vec2-xlsr-greek-speech-emotion-recognition)     |
 | [Eating Sound Collection](https://www.kaggle.com/mashijie/eating-sound-collection)                                           | [m3hrdadfi/wav2vec2-base-100k-eating-sound-collection](https://huggingface.co/m3hrdadfi/wav2vec2-base-100k-eating-sound-collection)             |
 | [GTZAN Dataset - Music Genre Classification](https://www.kaggle.com/andradaolteanu/gtzan-dataset-music-genre-classification) | [m3hrdadfi/wav2vec2-base-100k-gtzan-music-genres](https://huggingface.co/m3hrdadfi/wav2vec2-base-100k-gtzan-music-genres)                       |
+
+
+## Verified Training Log
+```bash
+FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+***** Running training *****
+  Num examples = 422
+  Num Epochs = 5
+  Instantaneous batch size per device = 4
+  Total train batch size (w. parallel, distributed & accumulation) = 8
+  Gradient Accumulation steps = 2
+  Total optimization steps = 265
+  Number of trainable parameters = 312283269
+{'loss': 1.259, 'learning_rate': 6.226415094339622e-05, 'epoch': 1.89}
+ 38%|██████████████████████████████████████████████▊                                                                             | 100/265 [9:41:41<1:39:22, 36.14s/it]The following columns in the evaluation set don't have a corresponding argument in `Wav2Vec2ForSpeechClassification.forward` and have been ignored: emotion, path, name. If emotion, path, name are not expected by `Wav2Vec2ForSpeechClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 91
+  Batch size = 4
+{'eval_loss': 0.999789297580719, 'eval_accuracy': 0.5824176073074341, 'eval_runtime': 111.5244, 'eval_samples_per_second': 0.816, 'eval_steps_per_second': 0.206, 'epoch': 1.89}
+ 38%|██████████████████████████████████████████████▊                                                                             | 100/265 [9:43:32<1:39:22, 36.14s/it]
+Saving model checkpoint to /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-100
+Configuration saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-100/config.json
+Model weights saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-100/pytorch_model.bin
+Feature extractor saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-100/preprocessor_config.json
+{'loss': 0.4857, 'learning_rate': 2.4528301886792453e-05, 'epoch': 3.77}
+ 75%|██████████████████████████████████████████████████████████████████████████████████████████████▎                              | 200/265 [10:38:36<31:10, 28.78s/it]The following columns in the evaluation set don't have a corresponding argument in `Wav2Vec2ForSpeechClassification.forward` and have been ignored: emotion, path, name. If emotion, path, name are not expected by `Wav2Vec2ForSpeechClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 91
+  Batch size = 4
+{'eval_loss': 0.6223454475402832, 'eval_accuracy': 0.8571428656578064, 'eval_runtime': 107.8336, 'eval_samples_per_second': 0.844, 'eval_steps_per_second': 0.213, 'epoch': 3.77}
+ 75%|██████████████████████████████████████████████████████████████████████████████████████████████▎                              | 200/265 [10:40:24<31:10, 28.78s/it]
+Saving model checkpoint to /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-200
+Configuration saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-200/config.json
+Model weights saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-200/pytorch_model.bin
+Feature extractor saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/checkpoint-200/preprocessor_config.json
+ 83%|███████████████████████████████████████████████████████████████████████████████████████████████████████▊                     | 220/265 [10:50:41<22:22, 29.82s/it]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 265/265 [11:16:47<00:00, 29.74s/it]
+Training completed. Do not forget to share your model on huggingface.co/models =)
+{'train_runtime': 40607.4862, 'train_samples_per_second': 0.052, 'train_steps_per_second': 0.007, 'train_loss': 0.7086862851988595, 'epoch': 5.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 265/265 [11:16:47<00:00, 153.24s/it]
+Saving model checkpoint to /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/
+Configuration saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/config.json
+Model weights saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/pytorch_model.bin
+Feature extractor saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/preprocessor_config.json
+Feature extractor saved in /Users/ashwic/Desktop/CSEP590/SER/w2v2ser/soxan/model_files/output/preprocessor_config.json
+***** train metrics *****
+  epoch                    =         5.0
+  train_loss               =      0.7087
+  train_runtime            = 11:16:47.48
+  train_samples            =         422
+  train_samples_per_second =       0.052
+  train_steps_per_second   =       0.007
+02/27/2023 11:19:09 - INFO - __main__ -   *** Evaluate ***
+The following columns in the evaluation set don't have a corresponding argument in `Wav2Vec2ForSpeechClassification.forward` and have been ignored: emotion, path, name. If emotion, path, name are not expected by `Wav2Vec2ForSpeechClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 91
+  Batch size = 4
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 23/23 [01:58<00:00,  5.17s/it]
+***** eval metrics *****
+  epoch                   =        5.0
+  eval_accuracy           =     0.8352
+  eval_loss               =      0.629
+  eval_runtime            = 0:02:04.11
+  eval_samples            =         91
+  eval_samples_per_second =      0.733
+  eval_steps_per_second   =      0.185
+```

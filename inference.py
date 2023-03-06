@@ -40,8 +40,9 @@ def predict(path, sampling_rate):
     return outputs
 
 
-path = "model_files/aesdd/disgust/d01 (1).wav"
+#path = "model_files/aesdd/disgust/d01 (1).wav"
 #path = "model_files/aesdd/soccer_russian_sample.wav"
+path = "model_files/aesdd/soccer_russian_sample_mono.wav"
 
 outputs = predict(path, sampling_rate)
 print(outputs)
